@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#174a7e">
+  <title>Inscripción a actividades · LUF</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{--blue:#174a7e;--blue2:#2369a8;--green:#087d43;--red:#b32626;--ink:#15243a;--muted:#66758a;--line:#d8e2ec}
+    *{box-sizing:border-box}body{margin:0;font:16px/1.45 Arial,sans-serif;color:var(--ink);background:linear-gradient(145deg,#edf5fc,#e8f5f2);min-height:100vh}
+    .shell{width:min(760px,100%);margin:auto;padding:24px 14px 42px}.brand{text-align:center;margin-bottom:18px}.brand-mark{width:82px;height:82px;margin:auto;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff;font-size:28px;font-weight:900;box-shadow:0 8px 22px #174a7e35}.brand h1{margin:12px 0 2px;color:var(--blue);font-size:30px}.brand p{margin:0;color:var(--muted);font-weight:bold}
+    .card{background:#fff;border-radius:22px;padding:25px;box-shadow:0 13px 35px #244d701c;margin-bottom:16px}.card h2{margin:0 0 6px;color:var(--blue);font-size:25px}.detail{color:var(--muted);margin:0 0 18px}.section{font-size:19px;font-weight:900;color:var(--blue);padding-bottom:7px;border-bottom:3px solid #e4eef7;margin:24px 0 10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{margin-top:13px}label{display:block;font-weight:800;margin-bottom:6px}input,select{width:100%;padding:13px;border:2px solid #c6d6e5;border-radius:11px;background:#fff;color:var(--ink);font:16px Arial}input:focus,select:focus{outline:0;border-color:var(--blue2);box-shadow:0 0 0 3px #2369a81a}
+    button{border:0;border-radius:12px;padding:14px 17px;font-weight:900;font-size:15px;cursor:pointer;background:var(--blue);color:#fff}.full{width:100%;margin-top:20px;font-size:17px;padding:16px}.secondary{background:#fff;color:var(--blue);border:2px solid var(--blue)}.danger{background:#fff;color:var(--red);border:2px solid #efb8b8}.companion{position:relative;border:2px solid #e2ebf3;border-radius:15px;padding:15px;margin-top:12px;background:#f9fbfd}.companion h3{margin:0;color:var(--blue);font-size:17px}.companion .danger{position:absolute;right:12px;top:10px;padding:7px 10px}
+    .info{background:#eff6fc;border-left:5px solid var(--blue);padding:13px;border-radius:8px;color:#3d5974;margin:15px 0}.error,.success{display:none;padding:14px;border-radius:12px;margin:14px 0;font-weight:bold}.error{background:#ffeded;color:var(--red)}.success{background:#e5f8ed;color:var(--green)}.show{display:block}.loading{text-align:center;padding:30px;color:var(--blue);font-weight:bold}.hidden{display:none!important}
+    .event-button{width:100%;text-align:left;margin-top:10px;background:#f4f8fc;color:var(--blue);border:2px solid #cbddec}.event-button strong{display:block;font-size:18px}.event-button span{display:block;color:var(--muted);margin-top:3px;font-weight:normal}.result{text-align:center}.check{width:70px;height:70px;border-radius:50%;background:#dff7e8;color:var(--green);display:grid;place-items:center;font-size:42px;margin:auto}.qr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:20px}.qr-card{border:2px solid #dce7f0;border-radius:16px;padding:16px;background:#fff}.qr-card h3{margin:0 0 3px}.qr{width:max-content;margin:14px auto;padding:8px;background:#fff}.code{font-family:monospace;font-size:12px;word-break:break-all;color:var(--muted)}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:18px}
+    @media(max-width:580px){.shell{padding:17px 11px 30px}.card{padding:20px 16px}.grid{grid-template-columns:1fr}.brand h1{font-size:26px}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="brand"><div class="brand-mark">LUF</div><h1>Inscripción a actividades</h1><p>Liceo Luis Urbina Flores</p></header>
+
+  <section id="selector" class="card hidden"><h2>Actividades disponibles</h2><p class="detail">Selecciona la actividad en la que deseas inscribirte.</p><div id="eventList" class="loading">Cargando actividades…</div></section>
+
+  <section id="formCard" class="card hidden">
+    <h2 id="eventName">Inscripción</h2><p id="eventDetail" class="detail"></p>
+    <div class="info">Al finalizar se generará un código QR individual para cada persona inscrita.</div>
+    <div id="error" class="error"></div>
+    <form id="registration" method="post" target="receiver">
+      <input id="payload" name="payload" type="hidden"><input id="website" type="text" tabindex="-1" autocomplete="off" class="hidden">
+      <div class="section">Datos del responsable</div>
+      <div class="grid">
+        <div class="field"><label>Nombre completo *</label><input id="name" required placeholder="Nombre y apellidos"></div>
+        <div class="field"><label id="rutLabel">RUT *</label><input id="rut" placeholder="12.345.678-9"></div>
+        <div class="field"><label>Tipo de persona *</label><select id="type" required><option value="">Selecciona una opción</option><option value="ESTUDIANTE">Estudiante</option><option value="APODERADO">Apoderado/a</option><option value="FUNCIONARIO">Funcionario/a</option><option value="INVITADO">Invitado/a</option><option value="OTRO">Otro</option></select></div>
+        <div id="courseBox" class="field hidden"><label>Curso</label><input id="course" placeholder="Ej: 2° Medio B"></div>
+        <div class="field"><label>Correo electrónico</label><input id="email" type="email" placeholder="correo@ejemplo.cl"></div>
+        <div class="field"><label>Teléfono</label><input id="phone" placeholder="+56 9 1234 5678"></div>
+      </div>
+      <div id="companionsSection" class="hidden"><div class="section">Acompañantes</div><div id="companions"></div><button id="addCompanion" type="button" class="secondary full">+ Agregar acompañante</button><p id="counter" class="detail"></p></div>
+      <button id="submit" type="submit" class="full">Finalizar inscripción</button>
+    </form>
+    <div id="sending" class="loading hidden">Registrando y generando códigos QR…</div>
+    <iframe id="receiver" name="receiver" class="hidden"></iframe>
+  </section>
+
+  <section id="result" class="card result hidden"><div class="check">✓</div><h2>Inscripción completada</h2><p id="resultDetail" class="detail"></p><div id="qrGrid" class="qr-grid"></div><button type="button" class="secondary full" onclick="location.reload()">Realizar otra inscripción</button></section>
+  <p class="footer">Sistema de Inscripción e Ingreso QR · LUF</p>
+</main>
+<script>
+const ENDPOINT='https://script.google.com/macros/s/AKfycby4etmF32xHGQv_fPiXZ5m29TA2R6mvWp_94Mm-Z_M_rOlM2XnDU3JQw0WdlLqRoIq_/exec';
+const $=id=>document.getElementById(id);let eventData=null,companionCount=0,waiting=false,pollTimer=null;
+function jsonp(params){return new Promise((resolve,reject)=>{const cb='luf_'+Date.now()+'_'+Math.random().toString(36).slice(2),s=document.createElement('script');let finished=false;const finish=(fn,v)=>{if(finished)return;finished=true;clearTimeout(t);s.remove();delete window[cb];fn(v)};const t=setTimeout(()=>finish(reject,new Error('El sistema demoró en responder.')),20000);window[cb]=d=>finish(resolve,d);s.onerror=()=>finish(reject,new Error('No fue posible conectar con el sistema.'));s.src=ENDPOINT+'?'+new URLSearchParams({...params,callback:cb});document.body.appendChild(s)})}
+function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}function clean(v){return String(v||'').trim().replace(/\s+/g,' ')}
+function formatDate(v){if(!v)return'';const p=String(v).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:v}function formatRut(v){const x=String(v||'').toUpperCase().replace(/[^0-9K]/g,'');return x.length<2?x:x.slice(0,-1)+'-'+x.slice(-1)}
+function showError(msg){$('error').textContent=msg;$('error').classList.add('show');$('error').scrollIntoView({behavior:'smooth',block:'center'})}function hideError(){$('error').classList.remove('show')}
+async function init(){const id=new URLSearchParams(location.search).get('evento');try{if(id){const r=await jsonp({api:'evento',id});if(!r.ok)throw new Error(r.error);openEvent(r.evento)}else{const r=await jsonp({api:'eventos'});if(!r.ok)throw new Error(r.error);showEvents(r.eventos||[])}}catch(e){$('selector').classList.remove('hidden');$('eventList').innerHTML='<div class="error show">'+esc(e.message)+'</div>'}}
+function showEvents(events){$('selector').classList.remove('hidden');if(!events.length){$('eventList').innerHTML='<div class="info">No hay actividades con inscripción abierta.</div>';return}$('eventList').className='';$('eventList').innerHTML=events.map(e=>'<button class="event-button" data-id="'+esc(e.id)+'"><strong>'+esc(e.nombre)+'</strong><span>'+esc(formatDate(e.fecha))+' · '+esc(e.lugar||'Lugar por confirmar')+'</span></button>').join('');document.querySelectorAll('.event-button').forEach(b=>b.onclick=()=>{location.search='?evento='+encodeURIComponent(b.dataset.id)})}
+function openEvent(e){if(e.estado!=='ACTIVO'||e.inscripcionAbierta!=='SI')throw new Error('Las inscripciones para esta actividad están cerradas.');eventData=e;$('formCard').classList.remove('hidden');$('eventName').textContent=e.nombre;$('eventDetail').textContent=formatDate(e.fecha)+(e.horaInicio?' · '+e.horaInicio:'')+(e.lugar?' · '+e.lugar:'');$('rutLabel').textContent='RUT '+(e.solicitaRut==='SI'?'*':'(opcional)');$('rut').required=e.solicitaRut==='SI';if(e.permiteAcompanantes==='SI'&&Number(e.maxAcompanantes)>0){$('companionsSection').classList.remove('hidden');updateCounter()}}
+$('type').onchange=()=>{$('courseBox').classList.toggle('hidden',$('type').value!=='ESTUDIANTE')};$('rut').onblur=()=>{$('rut').value=formatRut($('rut').value)};
+$('addCompanion').onclick=()=>{const max=Number(eventData.maxAcompanantes||0);if(companionCount>=max)return;companionCount++;const box=document.createElement('div');box.className='companion';box.innerHTML='<h3>Acompañante</h3><button type="button" class="danger">Quitar</button><div class="grid"><div class="field"><label>Nombre completo *</label><input class="c-name" required></div><div class="field"><label>RUT '+(eventData.solicitaRut==='SI'?'*':'(opcional)')+'</label><input class="c-rut" '+(eventData.solicitaRut==='SI'?'required':'')+'></div><div class="field"><label>Tipo de persona *</label><select class="c-type" required><option value="">Selecciona una opción</option><option value="ESTUDIANTE">Estudiante</option><option value="APODERADO">Apoderado/a</option><option value="FUNCIONARIO">Funcionario/a</option><option value="INVITADO">Invitado/a</option><option value="OTRO">Otro</option></select></div><div class="field c-course-box hidden"><label>Curso</label><input class="c-course"></div></div>';box.querySelector('.danger').onclick=()=>{box.remove();companionCount--;updateCounter()};box.querySelector('.c-type').onchange=e=>box.querySelector('.c-course-box').classList.toggle('hidden',e.target.value!=='ESTUDIANTE');box.querySelector('.c-rut').onblur=e=>e.target.value=formatRut(e.target.value);$('companions').appendChild(box);updateCounter()};
+function updateCounter(){const max=Number(eventData.maxAcompanantes||0);$('counter').textContent=companionCount+' de '+max+' acompañante(s)';$('addCompanion').disabled=companionCount>=max}
+$('registration').onsubmit=e=>{e.preventDefault();hideError();if(!$('registration').reportValidity())return;const companions=[...document.querySelectorAll('.companion')].map(x=>({nombre:clean(x.querySelector('.c-name').value),rut:clean(x.querySelector('.c-rut').value),tipoPersona:x.querySelector('.c-type').value,curso:clean(x.querySelector('.c-course').value)}));const token=Date.now().toString(36)+Math.random().toString(36).slice(2);const wrapper={token,website:$('website').value,datos:{idEvento:eventData.id,responsable:{nombre:clean($('name').value),rut:clean($('rut').value),tipoPersona:$('type').value,curso:clean($('course').value)},email:clean($('email').value),telefono:clean($('phone').value),acompanantes:companions}};$('payload').value=JSON.stringify(wrapper);$('registration').action=ENDPOINT;$('submit').disabled=true;$('sending').classList.remove('hidden');waiting=true;$('registration').submit();setTimeout(()=>poll(token,0),700)};
+async function poll(token,attempt){if(!waiting)return;if(attempt>35){fail('La inscripción demoró demasiado. Revisa tu conexión e intenta nuevamente.');return}try{const r=await jsonp({api:'resultado',token});if(r.pendiente){pollTimer=setTimeout(()=>poll(token,attempt+1),700);return}waiting=false;if(!r.ok){fail(r.error||'No fue posible completar la inscripción.');return}showResult(r.resultado)}catch(e){pollTimer=setTimeout(()=>poll(token,attempt+1),700)}}
+function fail(msg){waiting=false;$('sending').classList.add('hidden');$('submit').disabled=false;showError(msg)}
+function showResult(r){$('formCard').classList.add('hidden');$('result').classList.remove('hidden');$('resultDetail').textContent='Se generó un QR individual para '+r.personas.length+' persona(s).';$('qrGrid').innerHTML=r.personas.map((p,i)=>'<div class="qr-card"><h3>'+esc(p.nombre)+'</h3><div id="qr-'+i+'" class="qr"></div><div class="code">'+esc(p.codigoQr)+'</div><button type="button" class="secondary full" onclick="downloadQR('+i+',\''+esc(p.nombre).replace(/'/g,'')+'\')">Descargar QR</button></div>').join('');setTimeout(()=>r.personas.forEach((p,i)=>new QRCode($('qr-'+i),{text:p.codigoQr,width:180,height:180,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H})),80);scrollTo({top:0,behavior:'smooth'})}
+function downloadQR(i,name){const q=$('qr-'+i),canvas=q.querySelector('canvas'),img=q.querySelector('img'),src=canvas?canvas.toDataURL('image/png'):img&&img.src;if(!src)return;const a=document.createElement('a');a.href=src;a.download=(name||'codigo-qr').replace(/[^a-z0-9áéíóúñ_-]/gi,'-')+'.png';a.click()}
+init();
+</script>
+</body>
+</html>
