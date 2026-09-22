@@ -1,0 +1,1 @@
+# inscripciones-qr-luf
